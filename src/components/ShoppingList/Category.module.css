@@ -1,0 +1,22 @@
+.card {
+    background-color: var(--background-paper);
+    color: var(--text-primary);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .header {
+    padding-bottom: 1rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .title {
+    font-weight: bold;
+  }
+  
+  .content {
+    padding: 1rem;
+  }
+  
