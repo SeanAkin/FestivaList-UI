@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Chip, Link as MuiLink, Box } from "@mui/material";
+import { Card, CardContent, Typography, Chip, Link as MuiLink, Box, Tooltip } from "@mui/material";
 import { Star, OpenInNew } from "@mui/icons-material";
 import { Item as ItemType } from "@/types/item";
 import styles from "./Item.module.css";
@@ -11,10 +11,12 @@ export default function Item({ item }: ItemProps) {
   return (
     <Card className={styles.card} variant="outlined">
       <CardContent className={styles.content}>
-        <Box>
-          <Typography variant="subtitle1" className={styles.name}>
-            {item.name}
-          </Typography>
+        <Box className={styles.left}>
+          <Tooltip title={item.name} placement="top-start">
+            <Typography className={styles.name}>
+              {item.name}
+            </Typography>
+          </Tooltip>
           {item.url && (
             <MuiLink
               href={item.url}
@@ -28,13 +30,15 @@ export default function Item({ item }: ItemProps) {
           )}
         </Box>
         {item.essential && (
-          <Chip
-            label="Essential"
-            icon={<Star className={styles.starIcon} />}
-            size="small"
-            color="secondary"
-            className={styles.essential}
-          />
+          <Box className={styles.right}>
+            <Chip
+              label="Essential"
+              icon={<Star className={styles.starIcon} />}
+              size="small"
+              color="secondary"
+              className={styles.essential}
+            />
+          </Box>
         )}
       </CardContent>
     </Card>
