@@ -1,13 +1,17 @@
-import { ThemeProvider } from "@mui/material";
-import './App.css'
-import ShoppingListPage from "@/pages/ShoppingList/ShoppingList";
-import darkTheme from "@/theme/darkTheme.ts";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
+import ShoppingList from "./pages/ShoppingList/ShoppingList";
+import SearchPage from "./pages/Search/Search";
 
 function App() {
-  return(
-      <ThemeProvider theme={darkTheme}>
-        <ShoppingListPage />
-      </ThemeProvider>
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<SearchPage />} />
+        <Route path="/shopping-list/:id" element={<ShoppingList />} />
+      </Routes>
+    </Router>
   );
 }
-export default App
+
+export default App;
