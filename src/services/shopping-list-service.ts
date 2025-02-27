@@ -36,14 +36,13 @@ const mockShoppingLists: ShoppingList[] = [
   },
   {
     guidId: "987e6543-a21b-34d5-c789-567890123456",
-    name: "Beach Trip Shopping List",
+    name: "One Item + Category Test",
     categories: [
       {
         categoryId: "1",
         name: "Essentials",
         items: [
-          { itemId: "1", name: "Sunscreen", url: "https://example.com/sunscreen", essential: true },
-          { itemId: "2", name: "Towel", url: "https://example.com/towel", essential: true },
+          { itemId: "1", name: "Sunscreen", url: "https://example.com/sunscreen", essential: true }
         ],
       },
     ],
