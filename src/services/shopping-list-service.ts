@@ -1,4 +1,5 @@
 import { ShoppingList } from "../types/shoppingList";
+import { Category } from "../types/category";
 
 const mockShoppingLists: ShoppingList[] = [
   {
@@ -12,6 +13,18 @@ const mockShoppingLists: ShoppingList[] = [
           { itemId: "1", name: "Tent", url: "https://example.com/tent", essential: true },
           { itemId: "2", name: "Very Very Very Very Very Very Lon Sleeping Bag", url: "https://example.com/sleeping-bag", essential: true },
           { itemId: "3", name: "Very Very Very Very Very Very Long Camping Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "5", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "6", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "7", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "8", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "9", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "10", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "11", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "12", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "13", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "14", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "15", name: "Big Chair", url: "https://example.com/chair", essential: false },
+          { itemId: "16", name: "Big Chair", url: "https://example.com/chair", essential: false },
         ],
       },
       {
@@ -47,12 +60,29 @@ const mockShoppingLists: ShoppingList[] = [
       },
     ],
   },
+  {
+    guidId: "7d54e77e-e457-4bc0-9222-5d52beda65dd",
+    name: "No Items + Not Category",
+    categories: [ ],
+  },
 ];
 
 const getShoppingListById = (id: string): Promise<ShoppingList | null> => {
   return Promise.resolve(mockShoppingLists.find(list => list.guidId === id) || null);
 };
 
+const addCategory = (listId: string, newCategory: Category): Promise<boolean> => {
+  const shoppingList = mockShoppingLists.find(list => list.guidId === listId);
+
+  if (!shoppingList) {
+    return Promise.resolve(false);
+  }
+
+  shoppingList.categories.push(newCategory);
+  return Promise.resolve(true);
+};
+
 export default {
   getShoppingListById,
+  addCategory,
 };
