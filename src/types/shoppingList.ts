@@ -1,7 +1,7 @@
 import { Category } from "./category";
 
 export interface ShoppingList {
-  guidId: string;
+  shoppingListId: string;
   name: string;
   categories: Category[];
 }

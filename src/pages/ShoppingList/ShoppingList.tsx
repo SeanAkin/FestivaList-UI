@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
     Container,
@@ -15,11 +15,13 @@ import { Share, ShoppingBag, Add } from "@mui/icons-material";
 import styles from "./ShoppingList.module.css";
 import shoppingListService from "@/services/shopping-list-service";
 import Category from "@/components/ShoppingList/Category";
+import AddCategory from "@/components/ShoppingList/AddCategory";
 import { useAppStore } from "@/store/store";
 
 export default function ShoppingList() {
     const { shoppingList, setShoppingList, showEssentialItems, toggleShowEssentialItems } = useAppStore();
     const { id } = useParams();
+    const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -63,6 +65,7 @@ export default function ShoppingList() {
                             <IconButton
                                 aria-label="add"
                                 className={styles.iconButton}
+                                onClick={() => setIsAddCategoryOpen(true)}
                             >
                                 <Add />
                             </IconButton>
@@ -79,6 +82,7 @@ export default function ShoppingList() {
                 ))}
             </Grid2>
 
+            <AddCategory open={isAddCategoryOpen} onClose={() => setIsAddCategoryOpen(false)} />
         </Container>
     ) : (
         "Bath too small..."

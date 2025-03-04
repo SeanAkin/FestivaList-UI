@@ -1,25 +1,39 @@
 import { useState } from "react";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import shoppingListService from "@/services/shopping-list-service";
+import { useAppStore } from "@/store/store";
 
 interface AddCategoryProps {
-    onSave: (categoryName: string) => void;
     open: boolean;
     onClose: () => void;
 }
 
-export default function AddCategory({ onSave, open, onClose }: AddCategoryProps) {
+export default function AddCategory({ open, onClose }: AddCategoryProps) {
     const [categoryName, setCategoryName] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
+    const { shoppingList, setShoppingList } = useAppStore();
 
-    const handleSave = () => {
-        if (categoryName.trim()) {
-            onSave(categoryName.trim());
+    const handleSave = async () => {
+        if (!categoryName.trim() || !shoppingList) return;
+
+        setIsSaving(true);
+        const newCategory = await shoppingListService.addCategory(shoppingList.shoppingListId, { name: categoryName.trim() });
+        setIsSaving(false);
+
+        if (newCategory) {
+            setShoppingList({
+                ...shoppingList,
+                categories: [...shoppingList.categories, newCategory], // Use the API response
+            });
             setCategoryName("");
             onClose();
+        } else {
+            console.error("Failed to add category");
         }
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md">
+        <Dialog open={open} onClose={onClose} maxWidth="md" closeAfterTransition={false}>
             <DialogTitle>Add Category</DialogTitle>
             <DialogContent>
                 <TextField
@@ -29,14 +43,16 @@ export default function AddCategory({ onSave, open, onClose }: AddCategoryProps)
                     fullWidth
                     value={categoryName}
                     onChange={(e) => setCategoryName(e.target.value)}
+                    disabled={isSaving}
+                    autoComplete="off"
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="primary">
+                <Button onClick={onClose} color="primary" disabled={isSaving}>
                     Cancel
                 </Button>
-                <Button onClick={handleSave} color="primary">
-                    Save
+                <Button onClick={handleSave} color="primary" disabled={isSaving}>
+                    {isSaving ? "Saving..." : "Save"}
                 </Button>
             </DialogActions>
         </Dialog>

@@ -12,6 +12,12 @@
   align-items: center;
 }
 
+.typography {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .title {
   font-weight: bold;
 }
