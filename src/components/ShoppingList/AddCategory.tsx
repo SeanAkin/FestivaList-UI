@@ -33,7 +33,7 @@ export default function AddCategory({ open, onClose }: AddCategoryProps) {
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" closeAfterTransition={false}>
+        <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="sm" closeAfterTransition={false}>
             <DialogTitle>Add Category</DialogTitle>
             <DialogContent>
                 <TextField
