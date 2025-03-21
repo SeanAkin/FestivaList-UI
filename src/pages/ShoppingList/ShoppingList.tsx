@@ -35,9 +35,8 @@ export default function ShoppingList() {
 
     return shoppingList !== null ? (
         <Container maxWidth="xl" className={styles.container}>
-            <Card className={styles.card}>
+            <Card className={styles.headerCard}>
                 <CardHeader
-                    className={styles.header}
                     title={
                         <Typography variant="h5" className={styles.title}>
                             {shoppingList.name}

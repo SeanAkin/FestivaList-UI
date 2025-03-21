@@ -23,7 +23,7 @@ export default function AddCategory({ open, onClose }: AddCategoryProps) {
         if (newCategory) {
             setShoppingList({
                 ...shoppingList,
-                categories: [...shoppingList.categories, newCategory], // Use the API response
+                categories: [...shoppingList.categories, newCategory],
             });
             setCategoryName("");
             onClose();
