@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardHeader, CardContent, Typography, Grid2, IconButton, Box } from "@mui/material";
+import { Card, CardHeader, CardContent, Typography, Grid2, IconButton } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { Category as CategoryType } from "@/types/category";
 import Item from "./Item";

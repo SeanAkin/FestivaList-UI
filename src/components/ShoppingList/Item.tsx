@@ -7,10 +7,9 @@ import { useAppStore } from "@/store/store";
 
 interface ItemProps {
   item: ItemType;
-  onDelete?: (itemId: string) => void;
 }
 
-export default function Item({ item, onDelete }: ItemProps) {
+export default function Item({ item }: ItemProps) {
   const { shoppingList, setShoppingList } = useAppStore();
 
   const handleDelete = async () => {
