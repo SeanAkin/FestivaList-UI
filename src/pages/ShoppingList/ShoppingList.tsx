@@ -9,7 +9,9 @@ import {
     Switch,
     IconButton,
     Box,
-    Grid2,
+    Divider,
+    Tooltip,
+    Grid,
 } from "@mui/material";
 import { Share, ShoppingBag, Add } from "@mui/icons-material";
 import styles from "./ShoppingList.module.css";
@@ -34,8 +36,8 @@ export default function ShoppingList() {
         : 0;
 
     return shoppingList !== null ? (
-        <Container maxWidth="xl" className={styles.container}>
-            <Card className={styles.headerCard}>
+        <Container maxWidth="xl" className={styles.container} disableGutters>
+            <Card className={styles.headerCard} elevation={0}>
                 <CardHeader
                     title={
                         <Typography variant="h5" className={styles.title}>
@@ -43,47 +45,77 @@ export default function ShoppingList() {
                         </Typography>
                     }
                     action={
-                        <IconButton aria-label="share" className={styles.iconButton}>
-                            <Share />
-                        </IconButton>
+                        <Tooltip title="Share list">
+                            <IconButton aria-label="share" className={styles.iconButton}>
+                                <Share />
+                            </IconButton>
+                        </Tooltip>
                     }
                 />
+                <Divider sx={{ opacity: 0.1 }} />
                 <CardContent>
-                    <Box display="flex" justifyContent="space-between">
+                    <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
                         <Box display="flex" alignItems="center" gap={1}>
-                            <ShoppingBag color="primary" className={styles.icon} />
-                            <Typography variant="body2" className={styles.text}>
+                            <ShoppingBag className={styles.icon} />
+                            <Typography variant="body1" className={styles.text}>
                                 {itemCount} items
                             </Typography>
                         </Box>
-                        <Box display="flex" alignItems="center" gap={1}>
-                            <Typography variant="body2" className={styles.text}>
-                                Show essential only
-                            </Typography>
-                            <Switch checked={showEssentialItems} onChange={toggleShowEssentialItems} color="primary" />
-                            <IconButton
-                                aria-label="add"
-                                className={styles.iconButton}
-                                onClick={() => setIsAddCategoryOpen(true)}
-                            >
-                                <Add />
-                            </IconButton>
+                        <Box display="flex" alignItems="center" gap={2}>
+                            <Box display="flex" alignItems="center" gap={1}>
+                                <Typography variant="body2" className={styles.text}>
+                                    Show essential only
+                                </Typography>
+                                <Switch 
+                                    checked={showEssentialItems} 
+                                    onChange={toggleShowEssentialItems} 
+                                    sx={{
+                                        '& .MuiSwitch-switchBase.Mui-checked': {
+                                            color: '#E38800',
+                                        },
+                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                            backgroundColor: '#E38800',
+                                        },
+                                    }}
+                                />
+                            </Box>
+                            <Tooltip title="Add new category">
+                                <IconButton
+                                    aria-label="add"
+                                    className={`${styles.iconButton} ${styles.addButton}`}
+                                    onClick={() => setIsAddCategoryOpen(true)}
+                                    size="small"
+                                    sx={{ 
+                                        backgroundColor: '#E38800',
+                                        color: '#FFFFFF',
+                                        '&:hover': {
+                                            backgroundColor: '#FFA726',
+                                        }
+                                    }}
+                                >
+                                    <Add />
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                     </Box>
                 </CardContent>
             </Card>
 
-            <Grid2 container spacing={3}>
+            <Grid container spacing={3}>
                 {shoppingList.categories.map((category) => (
-                    <Grid2 key={category.categoryId} size={{ xs: 12 }}>
+                    <Grid item key={category.categoryId} xs={12} md={6} lg={4}>
                         <Category category={category} />
-                    </Grid2>
+                    </Grid>
                 ))}
-            </Grid2>
+            </Grid>
 
             <AddCategory open={isAddCategoryOpen} onClose={() => setIsAddCategoryOpen(false)} />
         </Container>
     ) : (
-        "Bath too small..."
+        <Container className={styles.container}>
+            <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
+                <Typography variant="h5" color="textSecondary">Loading shopping list...</Typography>
+            </Box>
+        </Container>
     );
 }

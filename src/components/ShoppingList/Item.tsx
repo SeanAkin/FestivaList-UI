@@ -25,13 +25,15 @@ export default function Item({ item }: ItemProps) {
   return (
     <Card className={styles.card} variant="outlined">
       <Box className={styles.header}>
-        <IconButton 
-          size="small" 
-          onClick={handleDelete}
-          className={styles.deleteButton}
-        >
-          <Close />
-        </IconButton>
+        <Tooltip title="Remove item">
+          <IconButton 
+            size="small" 
+            onClick={handleDelete}
+            className={styles.deleteButton}
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
       <CardContent className={styles.content}>
         <Box className={styles.mainContent}>
@@ -46,7 +48,6 @@ export default function Item({ item }: ItemProps) {
                 label="Essential"
                 icon={<Star className={styles.starIcon} />}
                 size="small"
-                color="secondary"
                 className={styles.essential}
               />
             )}

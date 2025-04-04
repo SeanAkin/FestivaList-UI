@@ -1,6 +1,7 @@
 import {useState} from "react"
 import {useNavigate} from "react-router-dom"
-import {Container, CardContent, TextField, Button, Typography, Box} from "@mui/material"
+import {Container, CardContent, TextField, Button, Typography, Box, InputAdornment} from "@mui/material"
+import {Search as SearchIcon} from "@mui/icons-material"
 import styles from "./Search.module.css"
 
 export default function SearchPage() {
@@ -23,7 +24,7 @@ export default function SearchPage() {
                     <Typography variant="h5" className={styles.title}>
                         Search for a Shopping List
                     </Typography>
-                    <Box style= {{ display: 'flex', justifyContent: 'center' }}>
+                    <Box style={{ display: 'flex', justifyContent: 'center' }}>
                         <TextField
                             label="Enter Shopping List ID"
                             variant="outlined"
@@ -35,16 +36,40 @@ export default function SearchPage() {
                                 }
                             }}
                             className={styles.input}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon sx={{ color: '#E38800' }} />
+                                    </InputAdornment>
+                                ),
+                            }}
                             sx={{
                                 '& .MuiOutlinedInput-root': {
-                                    borderRadius: '50px'
+                                    borderRadius: '50px',
+                                    '& fieldset': {
+                                        borderColor: 'rgba(255, 255, 255, 0.12)',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#E38800',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#E38800',
+                                    },
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#E38800',
                                 },
                                 maxWidth: '500px',
                                 width: '100%',
                             }}
                         />
                     </Box>
-                    <Button variant="contained" color="primary" onClick={handleSearch} className={styles.button}>
+                    <Button 
+                        variant="contained" 
+                        onClick={handleSearch} 
+                        className={styles.button}
+                        disableElevation
+                    >
                         Search
                     </Button>
                 </CardContent>

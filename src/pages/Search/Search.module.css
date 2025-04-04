@@ -4,6 +4,7 @@
   align-items: center;
   height: 100%; /* Use full viewport height */
   justify-content: center; /* Center the content vertically */
+  background-color: #121212;
 }
 
 .logoContainer {
@@ -22,14 +23,6 @@
   width: 65%;
 }
 
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 2rem;
-}
-
 .content {
   display: flex;
   flex-direction: column;
@@ -39,8 +32,26 @@
 .title {
   text-align: center;
   font-weight: bold;
+  color: #FFFFFF;
+}
+
+.input {
+  margin-bottom: 1rem;
 }
 
 .button {
   align-self: center;
+  background-color: #E38800;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  text-transform: none;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: #FFA726;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
