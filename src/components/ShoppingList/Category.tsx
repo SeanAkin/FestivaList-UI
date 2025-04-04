@@ -1,6 +1,9 @@
-import { Card, CardHeader, CardContent, Typography, Grid2 } from "@mui/material";
+import { useState } from "react";
+import { Card, CardHeader, CardContent, Typography, Grid2, IconButton, Box } from "@mui/material";
+import { Add } from "@mui/icons-material";
 import { Category as CategoryType } from "@/types/category";
 import Item from "./Item";
+import AddItem from "./AddItem";
 import styles from "./Category.module.css";
 import { useAppStore } from "@/store/store";
 
@@ -10,6 +13,7 @@ interface CategoryProps {
 
 export default function Category({ category }: CategoryProps) {
     const { showEssentialItems } = useAppStore();
+    const [isAddItemOpen, setIsAddItemOpen] = useState(false);
 
     const filteredItems = showEssentialItems
         ? category.items.filter((item) => item.essential)
@@ -23,6 +27,15 @@ export default function Category({ category }: CategoryProps) {
                     <Typography variant="h6" className={styles.title}>
                         {category.name}
                     </Typography>
+                }
+                action={
+                    <IconButton
+                        aria-label="add item"
+                        onClick={() => setIsAddItemOpen(true)}
+                        className={styles.iconButton}
+                    >
+                        <Add />
+                    </IconButton>
                 }
             />
             <CardContent className={styles.content}>
@@ -42,6 +55,11 @@ export default function Category({ category }: CategoryProps) {
                     )}
                 </Grid2>
             </CardContent>
+            <AddItem
+                open={isAddItemOpen}
+                onClose={() => setIsAddItemOpen(false)}
+                categoryId={category.categoryId}
+            />
         </Card>
     );
 }

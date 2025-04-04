@@ -6,24 +6,28 @@
   box-shadow: var(--shadow-4);
 }
 
-.content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 1rem;
-}
-
-.left {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  margin-right: 1rem;
-}
-
-.right {
+.header {
+  height: 28px;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  padding: 0 0.5rem;
+  border-bottom: 1px solid var(--divider, rgba(0, 0, 0, 0.12));
+}
+
+.content {
+  padding: 0.75rem;
+}
+
+.mainContent {
+  display: flex;
   flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nameRow {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -33,6 +37,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin-right: 0.75rem;
 }
 
 .link {
@@ -40,7 +45,6 @@
   align-items: center;
   font-size: 14px;
   color: var(--primary-main, #90caf9);
-  margin-top: 0.5rem;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -56,8 +60,22 @@
 
 .essential {
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .starIcon {
+  font-size: 16px;
+}
+
+.deleteButton {
+  padding: 2px;
+  color: var(--text-secondary, rgba(0, 0, 0, 0.54));
+}
+
+.deleteButton:hover {
+  color: var(--error-main, #d32f2f);
+}
+
+.deleteButton svg {
   font-size: 16px;
 }

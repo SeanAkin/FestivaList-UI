@@ -25,3 +25,7 @@
 .content {
   padding: 1rem;
 }
+
+.iconButton {
+  color: var(--text-secondary);
+}
