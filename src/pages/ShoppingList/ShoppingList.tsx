@@ -11,7 +11,7 @@ import {
     Box,
     Divider,
     Tooltip,
-    Grid,
+    Grid2,
 } from "@mui/material";
 import { Share, ShoppingBag, Add } from "@mui/icons-material";
 import styles from "./ShoppingList.module.css";
@@ -101,13 +101,23 @@ export default function ShoppingList() {
                 </CardContent>
             </Card>
 
-            <Grid container spacing={3}>
+            <Grid2 container spacing={3}>
                 {shoppingList.categories.map((category) => (
-                    <Grid item key={category.categoryId} xs={12} md={6} lg={4}>
-                        <Category category={category} />
-                    </Grid>
+                    <Grid2
+                    key={category.categoryId}
+                    component="div"
+                    size={{ xs: 12, md: 6, lg: 4 }}
+                    sx={{
+                        display: 'flex',
+                        width: '100%',
+                    }}
+                    >
+                        <Box sx={{ width: '100%' }}>
+                            <Category category={category} />
+                        </Box>
+                    </Grid2>
                 ))}
-            </Grid>
+            </Grid2>
 
             <AddCategory open={isAddCategoryOpen} onClose={() => setIsAddCategoryOpen(false)} />
         </Container>

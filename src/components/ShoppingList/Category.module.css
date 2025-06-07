@@ -6,13 +6,16 @@
   margin-bottom: 1rem;
   overflow: hidden;
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 250px;
 }
 
 .header {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
 }
 
 .title {
@@ -23,6 +26,27 @@
 .content {
   flex-grow: 1;
   padding-top: 1rem;
+  max-height: 475px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #E38800;
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: #FFA726;
 }
 
 .iconButton {
@@ -39,4 +63,5 @@
   text-align: center;
   color: #CCCCCC;
   padding: 2rem 0;
+  width: 100%;
 }
