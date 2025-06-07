@@ -1,31 +1,67 @@
 .card {
-  background-color: var(--background-paper);
-  color: var(--text-primary);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
-  transition: background-color 0.3s, color 0.3s;
+  background-color: #1E1E1E;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
 }
 
 .header {
-  padding-bottom: 1rem;
-  display: flex;
-  align-items: center;
-}
-
-.typography {
-  display: flex;
-  justify-content: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   width: 100%;
 }
 
 .title {
-  font-weight: bold;
+  font-weight: 700;
+  color: #FFFFFF;
 }
 
 .content {
-  padding: 1rem;
+  flex-grow: 1;
+  padding-top: 1rem;
+  max-height: 475px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #E38800;
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: #FFA726;
 }
 
 .iconButton {
-  color: var(--text-secondary);
+  color: #E38800;
+  transition: all 0.2s ease;
+}
+
+.iconButton:hover {
+  background-color: rgba(227, 136, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.typography {
+  text-align: center;
+  color: #CCCCCC;
+  padding: 2rem 0;
+  width: 100%;
 }

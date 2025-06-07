@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardHeader, CardContent, Typography, Grid2, IconButton } from "@mui/material";
+import { Card, CardHeader, CardContent, Typography, IconButton, Tooltip, Grid2 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { Category as CategoryType } from "@/types/category";
 import Item from "./Item";
@@ -20,7 +20,7 @@ export default function Category({ category }: CategoryProps) {
         : category.items;
 
     return (
-        <Card className={styles.card}>
+        <Card className={styles.card} elevation={0} sx={{ width: '100%' }}>
             <CardHeader
                 className={styles.header}
                 title={
@@ -29,29 +29,34 @@ export default function Category({ category }: CategoryProps) {
                     </Typography>
                 }
                 action={
-                    <IconButton
-                        aria-label="add item"
-                        onClick={() => setIsAddItemOpen(true)}
-                        className={styles.iconButton}
-                    >
-                        <Add />
-                    </IconButton>
+                    <Tooltip title="Add item">
+                        <IconButton
+                            aria-label="add item"
+                            onClick={() => setIsAddItemOpen(true)}
+                            className={styles.iconButton}
+                            size="small"
+                        >
+                            <Add />
+                        </IconButton>
+                    </Tooltip>
                 }
             />
             <CardContent className={styles.content}>
-                <Grid2 container spacing={3}>
+                <Grid2 container spacing={2}>
                     {filteredItems.length > 0 ? (
                         filteredItems.map((item) => (
-                            <Grid2 key={item.itemId} size={{ xs: 12, sm: 6, md: 4 }}>
+                            <Grid2 key={item.itemId} size={12}>
                                 <Item item={item} />
                             </Grid2>
                         ))
                     ) : (
-                        <Typography variant="body2" className={styles.typography}>
-                            {category.items.length > 0 && showEssentialItems
+                        <Grid2 size={12}>
+                            <Typography variant="body2" className={styles.typography}>
+                                {category.items.length > 0 && showEssentialItems
                                 ? "No essential items in this category."
                                 : "No items in this category."}
-                        </Typography>
+                            </Typography>
+                        </Grid2>
                     )}
                 </Grid2>
             </CardContent>
