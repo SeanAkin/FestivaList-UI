@@ -1,153 +1,144 @@
-import { useState } from "react";
-import { 
-    Button, 
-    TextField, 
-    Dialog, 
-    DialogActions, 
-    DialogContent, 
-    DialogTitle, 
-    FormControlLabel, 
+import { FormEvent, useState } from "react";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
     Switch,
-    Box
+    TextField,
+    Typography,
 } from "@mui/material";
-import shoppingListService from "@/services/shopping-list-service";
 import { useAppStore } from "@/store/store";
 
 interface AddItemProps {
     open: boolean;
     onClose: () => void;
     categoryId: string;
+    categoryName: string;
 }
 
-export default function AddItem({ open, onClose, categoryId }: AddItemProps) {
-    const [itemName, setItemName] = useState("");
-    const [itemUrl, setItemUrl] = useState("");
-    const [isEssential, setIsEssential] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const { shoppingList, setShoppingList } = useAppStore();
+const MAX_NAME_LENGTH = 80;
 
-    const handleSave = async () => {
-        if (!itemName.trim() || !shoppingList) return;
+const normaliseUrl = (value: string) => (/^https?:\/\//i.test(value) ? value : `https://${value}`);
+
+const isValidUrl = (value: string) => {
+    try {
+        const url = new URL(normaliseUrl(value));
+        return Boolean(url.hostname.includes("."));
+    } catch {
+        return false;
+    }
+};
+
+export default function AddItem({ open, onClose, categoryId, categoryName }: AddItemProps) {
+    const addItem = useAppStore((state) => state.addItem);
+
+    const [name, setName] = useState("");
+    const [url, setUrl] = useState("");
+    const [isEssential, setIsEssential] = useState(false);
+    const [attempted, setAttempted] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [hasFailed, setHasFailed] = useState(false);
+
+    const trimmedName = name.trim();
+    const trimmedUrl = url.trim();
+
+    const nameError =
+        trimmedName.length === 0
+            ? "Give the item a name."
+            : trimmedName.length > MAX_NAME_LENGTH
+              ? `Keep it to ${MAX_NAME_LENGTH} characters or fewer.`
+              : null;
+    const urlError = trimmedUrl.length > 0 && !isValidUrl(trimmedUrl) ? "That doesn't look like a link." : null;
+
+    const close = () => {
+        setName("");
+        setUrl("");
+        setIsEssential(false);
+        setAttempted(false);
+        setHasFailed(false);
+        onClose();
+    };
+
+    const handleSubmit = async (event: FormEvent) => {
+        event.preventDefault();
+        setAttempted(true);
+        if (nameError || urlError || isSaving) return;
 
         setIsSaving(true);
-        const newItem = await shoppingListService.addItem(categoryId, {
-            name: itemName.trim(),
-            url: itemUrl.trim(),
+        setHasFailed(false);
+        const success = await addItem(categoryId, {
+            name: trimmedName,
+            url: trimmedUrl ? normaliseUrl(trimmedUrl) : "",
             essential: isEssential,
         });
         setIsSaving(false);
 
-        if (newItem) {
-            setShoppingList({
-                ...shoppingList,
-                categories: shoppingList.categories.map(category =>
-                    category.categoryId === categoryId
-                        ? { ...category, items: [...category.items, newItem] }
-                        : category
-                ),
-            });
-            setItemName("");
-            setItemUrl("");
-            setIsEssential(false);
-            onClose();
-        } else {
-            console.error("Failed to add item");
-        }
-    };
-
-    const textFieldSx = {
-        '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.12)',
-            },
-            '&:hover fieldset': {
-                borderColor: '#E38800',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#E38800',
-            },
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: '#E38800',
-        },
+        if (success) close();
+        else setHasFailed(true);
     };
 
     return (
-        <Dialog 
-            open={open} 
-            onClose={onClose} 
-            fullWidth={true} 
-            maxWidth="sm" 
-            closeAfterTransition={false}
-            PaperProps={{
-                sx: {
-                    backgroundColor: '#1E1E1E',
-                    borderRadius: '12px',
-                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
-                }
-            }}
-        >
-            <DialogTitle sx={{ color: '#FFFFFF', fontWeight: 600 }}>Add Item</DialogTitle>
-            <DialogContent>
-                <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Dialog open={open} onClose={close} fullWidth maxWidth="xs" closeAfterTransition={false}>
+            <form onSubmit={handleSubmit} noValidate>
+                <DialogTitle>Add to {categoryName}</DialogTitle>
+                <DialogContent>
                     <TextField
                         autoFocus
-                        label="Item Name"
                         fullWidth
-                        value={itemName}
-                        onChange={(e) => setItemName(e.target.value)}
+                        label="Item"
+                        placeholder="4-berth tent"
+                        value={name}
+                        onChange={(event) => {
+                            setName(event.target.value);
+                            setHasFailed(false);
+                        }}
                         disabled={isSaving}
                         autoComplete="off"
-                        sx={textFieldSx}
+                        error={Boolean(attempted && nameError)}
+                        helperText={(attempted && nameError) || " "}
                     />
                     <TextField
-                        label="URL (optional)"
                         fullWidth
-                        value={itemUrl}
-                        onChange={(e) => setItemUrl(e.target.value)}
+                        label="Link (optional)"
+                        placeholder="argos.co.uk/tent"
+                        value={url}
+                        onChange={(event) => {
+                            setUrl(event.target.value);
+                            setHasFailed(false);
+                        }}
                         disabled={isSaving}
                         autoComplete="off"
-                        sx={textFieldSx}
+                        error={Boolean(attempted && urlError)}
+                        helperText={(attempted && urlError) || " "}
                     />
                     <FormControlLabel
                         control={
                             <Switch
                                 checked={isEssential}
-                                onChange={(e) => setIsEssential(e.target.checked)}
+                                onChange={(event) => setIsEssential(event.target.checked)}
                                 disabled={isSaving}
-                                sx={{
-                                    '& .MuiSwitch-switchBase.Mui-checked': {
-                                        color: '#E38800',
-                                    },
-                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                        backgroundColor: '#E38800',
-                                    },
-                                }}
                             />
                         }
-                        label="Essential Item"
-                        sx={{ color: '#CCCCCC' }}
+                        label="Can't go without it"
                     />
-                </Box>
-            </DialogContent>
-            <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button onClick={onClose} disabled={isSaving} sx={{ color: '#CCCCCC' }}>
-                    Cancel
-                </Button>
-                <Button 
-                    onClick={handleSave} 
-                    disabled={isSaving}
-                    variant="contained"
-                    sx={{
-                        backgroundColor: '#E38800',
-                        '&:hover': {
-                            backgroundColor: '#FFA726',
-                        }
-                    }}
-                >
-                    {isSaving ? "Saving..." : "Save"}
-                </Button>
-            </DialogActions>
+                    {hasFailed && (
+                        <Typography role="alert" variant="body2" color="error" sx={{ mt: 1 }}>
+                            We couldn't add that item. Try again.
+                        </Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={close} disabled={isSaving}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" variant="contained" disabled={isSaving}>
+                        {isSaving ? "Adding" : "Add item"}
+                    </Button>
+                </DialogActions>
+            </form>
         </Dialog>
     );
-} 
+}

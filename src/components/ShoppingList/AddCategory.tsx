@@ -1,14 +1,5 @@
-import { useState } from "react";
-import { 
-    Button, 
-    TextField, 
-    Dialog, 
-    DialogActions, 
-    DialogContent, 
-    DialogTitle,
-    Box 
-} from "@mui/material";
-import shoppingListService from "@/services/shopping-list-service";
+import { FormEvent, useState } from "react";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "@mui/material";
 import { useAppStore } from "@/store/store";
 
 interface AddCategoryProps {
@@ -16,94 +7,84 @@ interface AddCategoryProps {
     onClose: () => void;
 }
 
-export default function AddCategory({ open, onClose }: AddCategoryProps) {
-    const [categoryName, setCategoryName] = useState("");
-    const [isSaving, setIsSaving] = useState(false);
-    const { shoppingList, setShoppingList } = useAppStore();
+const MAX_NAME_LENGTH = 40;
 
-    const handleSave = async () => {
-        if (!categoryName.trim() || !shoppingList) return;
+export default function AddCategory({ open, onClose }: AddCategoryProps) {
+    const addCategory = useAppStore((state) => state.addCategory);
+
+    const [name, setName] = useState("");
+    const [attempted, setAttempted] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [hasFailed, setHasFailed] = useState(false);
+
+    const trimmedName = name.trim();
+    const validationError =
+        trimmedName.length === 0
+            ? "Give the category a name."
+            : trimmedName.length > MAX_NAME_LENGTH
+              ? `Keep it to ${MAX_NAME_LENGTH} characters or fewer.`
+              : null;
+    const fieldError = attempted ? validationError : null;
+
+    const close = () => {
+        setName("");
+        setAttempted(false);
+        setHasFailed(false);
+        onClose();
+    };
+
+    const handleSubmit = async (event: FormEvent) => {
+        event.preventDefault();
+        setAttempted(true);
+        if (validationError || isSaving) return;
 
         setIsSaving(true);
-        const newCategory = await shoppingListService.addCategory(shoppingList.shoppingListId, { name: categoryName.trim() });
+        setHasFailed(false);
+        const success = await addCategory(trimmedName);
         setIsSaving(false);
 
-        if (newCategory) {
-            setShoppingList({
-                ...shoppingList,
-                categories: [...shoppingList.categories, newCategory],
-            });
-            setCategoryName("");
-            onClose();
-        } else {
-            console.error("Failed to add category");
-        }
+        if (success) close();
+        else setHasFailed(true);
     };
 
     return (
-        <Dialog 
-            open={open} 
-            onClose={onClose} 
-            fullWidth={true} 
-            maxWidth="sm" 
-            closeAfterTransition={false}
-            PaperProps={{
-                sx: {
-                    backgroundColor: '#1E1E1E',
-                    borderRadius: '12px',
-                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
-                }
-            }}
-        >
-            <DialogTitle sx={{ color: '#FFFFFF', fontWeight: 600 }}>Add Category</DialogTitle>
-            <DialogContent>
-                <Box sx={{ my: 1 }}>
+        <Dialog open={open} onClose={close} fullWidth maxWidth="xs" closeAfterTransition={false}>
+            <form onSubmit={handleSubmit} noValidate>
+                <DialogTitle>New category</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                        Group things that get packed together - camping, food, wearables.
+                    </Typography>
                     <TextField
                         autoFocus
-                        margin="dense"
-                        label="Category Name"
                         fullWidth
-                        value={categoryName}
-                        onChange={(e) => setCategoryName(e.target.value)}
+                        label="Category name"
+                        placeholder="Camping"
+                        value={name}
+                        onChange={(event) => {
+                            setName(event.target.value);
+                            setHasFailed(false);
+                        }}
                         disabled={isSaving}
                         autoComplete="off"
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'rgba(255, 255, 255, 0.12)',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: '#E38800',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: '#E38800',
-                                },
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: '#E38800',
-                            },
-                        }}
+                        error={Boolean(fieldError)}
+                        helperText={fieldError ?? " "}
                     />
-                </Box>
-            </DialogContent>
-            <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button onClick={onClose} disabled={isSaving} sx={{ color: '#CCCCCC' }}>
-                    Cancel
-                </Button>
-                <Button 
-                    onClick={handleSave} 
-                    disabled={isSaving}
-                    variant="contained"
-                    sx={{
-                        backgroundColor: '#E38800',
-                        '&:hover': {
-                            backgroundColor: '#FFA726',
-                        }
-                    }}
-                >
-                    {isSaving ? "Saving..." : "Save"}
-                </Button>
-            </DialogActions>
+                    {hasFailed && (
+                        <Typography role="alert" variant="body2" color="error">
+                            We couldn't add that category. Try again.
+                        </Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={close} disabled={isSaving}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" variant="contained" disabled={isSaving}>
+                        {isSaving ? "Adding" : "Add category"}
+                    </Button>
+                </DialogActions>
+            </form>
         </Dialog>
     );
 }

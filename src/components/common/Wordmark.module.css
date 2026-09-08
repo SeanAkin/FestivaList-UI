@@ -1,0 +1,25 @@
+.link {
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.link:hover {
+  text-decoration: none;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+  color: var(--ink-primary);
+  transition: color 180ms var(--ease);
+}
+
+.link:hover .wordmark {
+  color: var(--accent-strong);
+}
+
+.accent {
+  color: var(--accent);
+}
