@@ -1,131 +1,173 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { Button, IconButton, Snackbar, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import {
-    Container,
-    Card,
-    CardHeader,
-    CardContent,
-    Typography,
-    Switch,
-    IconButton,
-    Box,
-    Divider,
-    Tooltip,
-    Grid2,
-} from "@mui/material";
-import { Share, ShoppingBag, Add } from "@mui/icons-material";
-import styles from "./ShoppingList.module.css";
-import shoppingListService from "@/services/shopping-list-service";
+    Add,
+    ArrowBack,
+    IosShare,
+    SearchOff,
+    SentimentDissatisfied,
+    Inventory2Outlined,
+} from "@mui/icons-material";
+import { useAppStore } from "@/store/store";
 import Category from "@/components/ShoppingList/Category";
 import AddCategory from "@/components/ShoppingList/AddCategory";
-import { useAppStore } from "@/store/store";
+import ListSkeleton from "@/components/ShoppingList/ListSkeleton";
+import MessageState from "@/components/common/MessageState";
+import Wordmark from "@/components/common/Wordmark";
+import styles from "./ShoppingList.module.css";
 
 export default function ShoppingList() {
-    const { shoppingList, setShoppingList, showEssentialItems, toggleShowEssentialItems } = useAppStore();
     const { id } = useParams();
+    const shoppingList = useAppStore((state) => state.shoppingList);
+    const status = useAppStore((state) => state.status);
+    const essentialsOnly = useAppStore((state) => state.essentialsOnly);
+    const setEssentialsOnly = useAppStore((state) => state.setEssentialsOnly);
+    const loadShoppingList = useAppStore((state) => state.loadShoppingList);
+
     const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+    const [toast, setToast] = useState<string | null>(null);
 
     useEffect(() => {
-        if (id) {
-            shoppingListService.getShoppingListById(id).then(setShoppingList);
+        if (id) loadShoppingList(id);
+    }, [id, loadShoppingList]);
+
+    const allItems = shoppingList?.categories.flatMap((category) => category.items) ?? [];
+    const essentialCount = allItems.filter((item) => item.essential).length;
+
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            setToast("Link copied. Send it to whoever is coming.");
+        } catch {
+            setToast("We could not copy it automatically. Copy the address bar instead.");
         }
-    }, [id, setShoppingList]);
+    };
 
-    const itemCount = shoppingList
-        ? shoppingList.categories.flatMap(category => category.items).filter(item => !showEssentialItems || item.essential).length
-        : 0;
+    return (
+        <div className={styles.page}>
+            <div className={styles.ambient} aria-hidden="true" />
 
-    return shoppingList !== null ? (
-        <Container maxWidth="xl" className={styles.container} disableGutters>
-            <Card className={styles.headerCard} elevation={0}>
-                <CardHeader
-                    title={
-                        <Typography variant="h5" className={styles.title}>
-                            {shoppingList.name}
-                        </Typography>
-                    }
-                    action={
-                        <Tooltip title="Share list">
-                            <IconButton aria-label="share" className={styles.iconButton}>
-                                <Share />
+            <header className={styles.topbar}>
+                <div className={styles.topbarInner}>
+                    <Link to="/" className={styles.back}>
+                        <ArrowBack fontSize="small" />
+                        <span>Home</span>
+                    </Link>
+                    <Wordmark />
+                    <Tooltip title="Copy link to this list">
+                        <span>
+                            <IconButton
+                                onClick={handleShare}
+                                aria-label="Copy link to this list"
+                                disabled={status !== "ready"}
+                            >
+                                <IosShare fontSize="small" />
                             </IconButton>
-                        </Tooltip>
-                    }
-                />
-                <Divider sx={{ opacity: 0.1 }} />
-                <CardContent>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-                        <Box display="flex" alignItems="center" gap={1}>
-                            <ShoppingBag className={styles.icon} />
-                            <Typography variant="body1" className={styles.text}>
-                                {itemCount} items
-                            </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" gap={2}>
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <Typography variant="body2" className={styles.text}>
-                                    Show essential only
-                                </Typography>
-                                <Switch 
-                                    checked={showEssentialItems} 
-                                    onChange={toggleShowEssentialItems} 
-                                    sx={{
-                                        '& .MuiSwitch-switchBase.Mui-checked': {
-                                            color: '#E38800',
-                                        },
-                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                            backgroundColor: '#E38800',
-                                        },
-                                    }}
-                                />
-                            </Box>
-                            <Tooltip title="Add new category">
-                                <IconButton
-                                    aria-label="add"
-                                    className={`${styles.iconButton} ${styles.addButton}`}
-                                    onClick={() => setIsAddCategoryOpen(true)}
-                                    size="small"
-                                    sx={{ 
-                                        backgroundColor: '#E38800',
-                                        color: '#FFFFFF',
-                                        '&:hover': {
-                                            backgroundColor: '#FFA726',
-                                        }
-                                    }}
-                                >
-                                    <Add />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                    </Box>
-                </CardContent>
-            </Card>
+                        </span>
+                    </Tooltip>
+                </div>
+            </header>
 
-            <Grid2 container spacing={3}>
-                {shoppingList.categories.map((category) => (
-                    <Grid2
-                    key={category.categoryId}
-                    component="div"
-                    size={{ xs: 12, md: 6, lg: 4 }}
-                    sx={{
-                        display: 'flex',
-                        width: '100%',
-                    }}
-                    >
-                        <Box sx={{ width: '100%' }}>
-                            <Category category={category} />
-                        </Box>
-                    </Grid2>
-                ))}
-            </Grid2>
+            <main id="main" className={styles.main}>
+                {status === "loading" || status === "idle" ? (
+                    <ListSkeleton />
+                ) : status === "not-found" ? (
+                    <MessageState
+                        variant="page"
+                        icon={<SearchOff />}
+                        title="No list with that code"
+                        description="The code may be mistyped, or the list has been deleted. Check the link you were sent."
+                        action={
+                            <Button component={Link} to="/" variant="contained">
+                                Back to home
+                            </Button>
+                        }
+                    />
+                ) : status === "error" ? (
+                    <MessageState
+                        variant="page"
+                        icon={<SentimentDissatisfied />}
+                        title="We could not load that list"
+                        description="The connection dropped on the way. Try again in a moment."
+                        action={
+                            <Button variant="contained" onClick={() => id && loadShoppingList(id)}>
+                                Try again
+                            </Button>
+                        }
+                    />
+                ) : shoppingList ? (
+                    <>
+                        <section className={styles.listHeader}>
+                            <p className={styles.eyebrow}>Packing list</p>
+                            <h1 className={styles.title}>{shoppingList.name}</h1>
 
-            <AddCategory open={isAddCategoryOpen} onClose={() => setIsAddCategoryOpen(false)} />
-        </Container>
-    ) : (
-        <Container className={styles.container}>
-            <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
-                <Typography variant="h5" color="textSecondary">Loading shopping list...</Typography>
-            </Box>
-        </Container>
+                            <div className={styles.controls}>
+                                <p className={styles.meta}>
+                                    <span className={styles.metaStrong}>{allItems.length}</span>{" "}
+                                    {allItems.length === 1 ? "item" : "items"}
+                                    <span className={styles.metaDivider}>·</span>
+                                    <span className={styles.metaAccent}>{essentialCount} essential</span>
+                                    <span className={styles.metaDivider}>·</span>
+                                    {shoppingList.categories.length}{" "}
+                                    {shoppingList.categories.length === 1 ? "category" : "categories"}
+                                </p>
+
+                                <div className={styles.controlActions}>
+                                    <ToggleButtonGroup
+                                        exclusive
+                                        size="small"
+                                        value={essentialsOnly ? "essential" : "all"}
+                                        onChange={(_, value) => value && setEssentialsOnly(value === "essential")}
+                                        aria-label="Filter items"
+                                    >
+                                        <ToggleButton value="all">Everything</ToggleButton>
+                                        <ToggleButton value="essential">Essentials</ToggleButton>
+                                    </ToggleButtonGroup>
+
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<Add />}
+                                        onClick={() => setIsAddCategoryOpen(true)}
+                                    >
+                                        Category
+                                    </Button>
+                                </div>
+                            </div>
+                        </section>
+
+                        {shoppingList.categories.length > 0 ? (
+                            <div className={styles.columns}>
+                                {shoppingList.categories.map((category) => (
+                                    <Category key={category.categoryId} category={category} />
+                                ))}
+                            </div>
+                        ) : (
+                            <MessageState
+                                variant="page"
+                                icon={<Inventory2Outlined />}
+                                title="Nothing packed yet"
+                                description="Start with a category - camping, food, wearables - then fill it with the things you need."
+                                action={
+                                    <Button variant="contained" onClick={() => setIsAddCategoryOpen(true)}>
+                                        Add your first category
+                                    </Button>
+                                }
+                            />
+                        )}
+
+                        <AddCategory open={isAddCategoryOpen} onClose={() => setIsAddCategoryOpen(false)} />
+                    </>
+                ) : null}
+            </main>
+
+            <Snackbar
+                open={toast !== null}
+                onClose={() => setToast(null)}
+                autoHideDuration={4000}
+                message={toast}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            />
+        </div>
     );
 }

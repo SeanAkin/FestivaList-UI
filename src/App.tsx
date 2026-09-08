@@ -1,21 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import darkTheme from "./theme/darkTheme";
 import "./App.css";
+import Home from "./pages/Home/Home";
 import ShoppingList from "./pages/ShoppingList/ShoppingList";
-import SearchPage from "./pages/Search/Search";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <Router>
-        <Routes>
-          <Route path="/" element={<SearchPage />} />
-          <Route path="/shopping-list/:id" element={<ShoppingList />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <a className="skipLink" href="#main">
+        Skip to content
+      </a>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/shopping-list/:id" element={<ShoppingList />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 }
 

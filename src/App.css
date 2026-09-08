@@ -1,41 +1,93 @@
+:root {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: #121212;
+  background-color: #100e0c;
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #root {
-  margin: 0 auto;
-  padding: 1rem;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.038;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--accent-line);
+  color: var(--ink-primary);
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e1e1e;
-  border-radius: 4px;
+  background: var(--surface-sunken);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E38800;
-  border-radius: 4px;
+  background: #3a322b;
+  border-radius: 999px;
+  border: 3px solid var(--surface-sunken);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FFA726;
+  background: var(--accent);
 }
 
 a {
-  color: #E38800;
+  color: var(--accent);
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+.skipLink {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 30;
+  padding: 0.7rem 1.1rem;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--surface-sunken);
+  font-family: var(--font-body);
+  font-weight: 600;
+  transition: top 200ms var(--ease);
+}
+
+.skipLink:focus {
+  top: 1rem;
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
